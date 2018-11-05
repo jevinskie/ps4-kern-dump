@@ -1,7 +1,7 @@
 TARGETS = procinfo
 
 CFLAGS = -std=gnu99 -g -Wall -Wextra
-LDFLAGS = -lutil
+LDFLAGS = -lutil -lprocstat -lkvm
 
 all: $(TARGETS)
 

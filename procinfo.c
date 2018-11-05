@@ -5,9 +5,30 @@
 #include <unistd.h>
 #include <assert.h>
 
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/user.h>
 #include <libutil.h>
+#include <sys/sysctl.h>
+#include <kvm.h>
+#include <sys/param.h>
+#include <sys/queue.h>
+#include <sys/socket.h>
+#include <libprocstat.h>
+
+size_t getKernelStacks(void *destination) {
+	int name[4];
+	size_t len;
+
+	name[0] = CTL_KERN;
+	name[1] = KERN_PROC;
+	name[2] = KERN_PROC_KSTACK;
+	name[3] = syscall(20);
+
+	sysctl(name, 4, destination, &len, NULL, 0);
+
+	return len;
+}
 
 int main(int argc, const char **argv) {
 	int cnt;
@@ -43,6 +64,13 @@ int main(int argc, const char **argv) {
 		}
 		printf("vme[%3d].kve_path             = '%s'\n", i, vme[i].kve_path);
 	}
+
+	struct procstat *sysctl_ps = procstat_open_sysctl();
+	int kipp_cnt;
+	kvm_t *kvm = kvm_open(NULL, "/dev/mem", NULL, 0, "kvm error: ");
+	struct kinfo_proc *kipp = kvm_getprocs(kvm, KERN_PROC_ALL, 0, &kipp_cnt);
+	(void)kipp;
+	procstat_close(sysctl_ps);
 
 	return 0;
 }
