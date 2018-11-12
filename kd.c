@@ -14,6 +14,7 @@
 #include <vm/uma.h>
 
 #include "dump.h"
+#include "ptdump.h"
 
 typedef struct vm_map const *cvm_t;
 typedef struct vm_map_entry const *cvme_t;
@@ -83,7 +84,15 @@ static int event_handler(struct module *module, int event, void *arg) {
 				dump_map(buffer_map);
 			}
 			uprintf("dumping kernbase\n");
-			dump("kernbase", &kernbase, 0x1000);
+			printf("dumping kernbase\n");
+			dump("kernbase", &kernbase, 0x10000);
+			#if 1
+			uprintf("dumping page tables\n");
+			printf("dumping page tables\n");
+			ptdump(NULL, 4);
+			uprintf("done dumping\n");
+			printf("done dumping\n");
+			#endif
 			break;
 		case MOD_UNLOAD:
 			uprintf("kd unload\n");

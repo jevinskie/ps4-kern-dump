@@ -11,6 +11,8 @@
 
 #include "z85.h"
 
+#define print(fmt, ...) do { uprintf(fmt, __VA_ARGS__); } while (0)
+
 static void dump_helper(const char name[DUMP_NAME_SIZE], void *addr, uint32_t len, dump_record_t *rec) {
 	assert(len <= DUMP_DATA_SIZE);
 	assert(strlen(name) + 1 <= DUMP_NAME_SIZE);
@@ -29,7 +31,7 @@ void dump(const char name[DUMP_NAME_SIZE], void *addr, uint32_t len) {
 
 	assert(strlen(name) + 1 <= DUMP_NAME_SIZE);
 
-	uprintf("dumping '%s' at %p size %u\n", name, addr, len);
+	print("dumping '%s' at %p size %u\n", name, addr, len);
 
 	while (len > 0) {
 		uint32_t rec_data_len = len < DUMP_DATA_SIZE ? len : DUMP_DATA_SIZE;
@@ -41,6 +43,6 @@ void dump(const char name[DUMP_NAME_SIZE], void *addr, uint32_t len) {
 			sizeof(rec) - DUMP_DATA_SIZE + rec_data_len,
 			z85_buf, sizeof(z85_buf)
 		);
-		uprintf("%s%s\n", DUMP_TAG, z85_enc);
+		print("%s%s\n", DUMP_TAG, z85_enc);
 	}
 }
